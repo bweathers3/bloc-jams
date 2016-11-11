@@ -1,6 +1,6 @@
-function forEach(pointsArray, callback) {
+function forEach(pointsArray, anyNameCallback) {
     for (var x = 0; x < pointsArray.length; x++) {
-        callback(pointsArray[x]);
+        anyNameCallback(pointsArray[x]);
     }
 };
 
