@@ -141,18 +141,6 @@ var filterTimeCode = function(timeInSeconds) {
     return wholeMinutes + ":" + tenthsOfSeconds;
  };
 
-var updateSeekBarWhileSongPlays = function() {
-    if (currentSoundFile) {
-        currentSoundFile.bind('timeupdate', function(event) {         
-            var currentTime = this.getTime();
-            var songLength = this.getDuration();
-            var seekBarFillRatio = currentTime / songLength;
-            var $seekBar = $('.seek-control .seek-bar');
-            updateSeekPercentage($seekBar, seekBarFillRatio);
-            setCurrentTimeInPlayerBar(filterTimeCode(currentTime));
-        });
-    }
-};
 
 var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
     var offsetXPercent = seekBarFillRatio * 100;
@@ -202,21 +190,6 @@ var setupSeekBars = function() {
          });
      });
  };
- 
-var updatePlayerBarSong = function() {
-
-    $('.currently-playing .song-name').text(currentSongFromAlbum.title);
-    $('.currently-playing .artist-name').text(currentAlbum.artist);
-    $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.artist);
-
-    $('.main-controls .play-pause').html(playerBarPauseButton);
-    setTotalTimeInPlayerBar(filterTimeCode(currentSongFromAlbum.length));
-  
-};
-
-var trackIndex = function(album, song) {
-     return album.songs.indexOf(song);
- };
 
 var nextSong = function() {
     
@@ -225,20 +198,16 @@ var nextSong = function() {
     };
     
     var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
-    // Note that we're _incrementing_ the song here
     currentSongIndex++;
     
     if (currentSongIndex >= currentAlbum.songs.length) {
         currentSongIndex = 0;
     }
     
-    // Set a new current song
     setSong(currentSongIndex + 1);
     currentSoundFile.play();
     updateSeekBarWhileSongPlays();
   
-    
-    // Update the Player Bar information
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
     $('.currently-playing .artist-name').text(currentAlbum.artist);
     $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.title);
@@ -254,9 +223,6 @@ var nextSong = function() {
 };
 
 var previousSong = function() {
-    
-    // Note the difference between this implementation and the one in
-    // nextSong()
     var getLastSongNumber = function(index) {
         return index == (currentAlbum.songs.length - 1) ? 1 : index + 2;
     };
@@ -269,12 +235,10 @@ var previousSong = function() {
         currentSongIndex = currentAlbum.songs.length - 1;
     }
     
-    // Set a new current song
     setSong(currentSongIndex + 1);
     currentSoundFile.play();
     updateSeekBarWhileSongPlays(); // 
   
-    // Update the Player Bar information
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
     $('.currently-playing .artist-name').text(currentAlbum.artist);
     $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.title);
@@ -288,6 +252,33 @@ var previousSong = function() {
     $lastSongNumberCell.html(lastSongNumber);
     
 };
+
+var updateSeekBarWhileSongPlays = function() {
+    if (currentSoundFile) {
+        currentSoundFile.bind('timeupdate', function(event) {         
+            var currentTime = this.getTime();
+            var songLength = this.getDuration();
+            var seekBarFillRatio = currentTime / songLength;
+            var $seekBar = $('.seek-control .seek-bar');
+            updateSeekPercentage($seekBar, seekBarFillRatio);
+            setCurrentTimeInPlayerBar(filterTimeCode(currentTime));
+        });
+    }
+};
+
+var updatePlayerBarSong = function() {
+
+    $('.currently-playing .song-name').text(currentSongFromAlbum.title);
+    $('.currently-playing .artist-name').text(currentAlbum.artist);
+    $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.artist);
+
+    $('.main-controls .play-pause').html(playerBarPauseButton);
+     setTotalTimeInPlayerBar(filterTimeCode(currentSongFromAlbum.duration));
+};
+
+var trackIndex = function(album, song) {
+     return album.songs.indexOf(song);
+ };
 
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
 
